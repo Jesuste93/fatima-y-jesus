@@ -52,7 +52,7 @@
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    background:radial-gradient(ellipse at 50% 35%, #24392b 0%, #182a1f 55%, #0f1a13 100%);
+    background:radial-gradient(ellipse at 50% 35%, #f6efe2 0%, #ece0c8 55%, #ddcda3 100%);
     cursor:pointer;
     transition:opacity 0.8s ease;
   }
@@ -60,60 +60,93 @@
 
   .envelope{
     position:relative;
-    width:280px;
-    height:190px;
-    perspective:900px;
+    width:260px;
+    height:400px;
+    transition:transform 0.9s cubic-bezier(.4,.2,.2,1), opacity 0.9s ease;
+  }
+  #envelope-screen.open .envelope{
+    transform:scale(0.92);
+    opacity:0;
   }
   .env-body{
     position:absolute;
     inset:0;
-    background:linear-gradient(160deg, #2c4633 0%, #1c2e22 100%);
-    border:1px solid rgba(216,185,120,0.55);
-    box-shadow:0 30px 60px -20px rgba(0,0,0,0.6);
+    background:
+      url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='72' height='72'><g opacity='0.4' fill='none' stroke='%23d8c9a3' stroke-width='1'><path d='M6 66 C16 46 10 26 26 16 C36 9 46 16 41 26'/><circle cx='41' cy='26' r='2' fill='%23d8c9a3' stroke='none'/><path d='M26 16 C31 11 39 9 46 13'/><path d='M50 60 C56 50 54 40 62 34'/></g></svg>") repeat,
+      linear-gradient(160deg, #f9f3e6 0%, #efe3c9 100%);
+    border:1px solid rgba(169,128,61,0.35);
+    box-shadow:0 30px 70px -25px rgba(60,45,20,0.45);
   }
-  .env-body::after{
-    content:"";
+  .env-fold{
     position:absolute;
-    left:0; right:0; bottom:0;
-    height:2px;
-    background:rgba(216,185,120,0.35);
+    inset:0;
+    pointer-events:none;
   }
-  .env-flap{
+  .env-fold path{
+    stroke:rgba(169,128,61,0.3);
+    stroke-width:1;
+    fill:none;
+  }
+  .env-bloom{
     position:absolute;
-    top:0; left:0; right:0;
-    height:112px;
-    background:linear-gradient(160deg, #33513c 0%, #203524 100%);
-    clip-path:polygon(0 0, 100% 0, 50% 100%);
-    transform-origin:top center;
-    transition:transform 1s cubic-bezier(.4,.2,.2,1);
-    border-bottom:1px solid rgba(216,185,120,0.35);
-    z-index:3;
+    left:50%; top:130px;
+    width:56px; height:56px;
+    margin-left:-28px;
+    z-index:5;
+    pointer-events:none;
+    opacity:0;
+    transform:scale(0.3);
   }
-  #envelope-screen.open .env-flap{
-    transform:rotateX(-165deg);
+  #envelope-screen.open .env-bloom{
+    animation:bloomOut 1s ease-out forwards;
+  }
+  @keyframes bloomOut{
+    0%{ opacity:0; transform:scale(0.3) rotate(0deg); }
+    35%{ opacity:0.9; transform:scale(1.3) rotate(8deg); }
+    100%{ opacity:0; transform:scale(2.2) rotate(18deg); }
   }
   .env-seal{
     position:absolute;
-    left:50%; top:78px;
+    left:50%; top:130px;
     width:56px; height:56px;
     margin-left:-28px;
     border-radius:50%;
     background:radial-gradient(circle at 35% 30%, #d8b978, #a9803d 60%, #7a5c26 100%);
-    box-shadow:0 6px 14px rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.15);
+    box-shadow:0 6px 14px rgba(60,45,20,0.35), inset 0 0 0 1px rgba(255,255,255,0.2);
     display:flex;
     align-items:center;
     justify-content:center;
     z-index:4;
-    transition:transform 0.6s ease, opacity 0.6s ease;
+    transition:transform 0.6s ease;
   }
   #envelope-screen.open .env-seal{
-    transform:scale(0.2);
-    opacity:0;
+    transform:scale(0.85) rotate(-8deg);
   }
   .env-seal span{
     font-family:'Pinyon Script',cursive;
     font-size:26px;
     color:#2b2114;
+  }
+  .env-message{
+    position:absolute;
+    left:0; right:0; top:210px;
+    text-align:center;
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:15px;
+    line-height:1.5;
+    color:#4a3c22;
+    padding:0 24px;
+  }
+  .env-names{
+    position:absolute;
+    left:0; right:0; top:300px;
+    text-align:center;
+    font-family:'EB Garamond',serif;
+    font-variant:small-caps;
+    letter-spacing:0.14em;
+    font-size:14px;
+    color:#8a6a30;
   }
   .env-hint{
     margin-top:30px;
@@ -121,7 +154,7 @@
     font-variant:small-caps;
     letter-spacing:0.2em;
     font-size:15px;
-    color:#e7dcc0;
+    color:#8a6a30;
     opacity:0.85;
     animation:pulse 2.2s ease-in-out infinite;
   }
@@ -540,11 +573,27 @@
   <div id="envelope-screen">
     <div class="envelope">
       <div class="env-body"></div>
-      <div class="env-flap"></div>
+      <svg class="env-fold" viewBox="0 0 260 400" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 4 L130 170 L256 4"/>
+        <path d="M4 396 L130 170 L256 396"/>
+      </svg>
       <div class="env-seal"><span>F&amp;J</span></div>
+      <svg class="env-bloom" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#a9803d" stroke-width="1.4" fill="none" opacity="0.9">
+          <g transform="rotate(0 50 50)"><path d="M50 50 C54 35 54 20 50 5 C46 20 46 35 50 50 Z"/></g>
+          <g transform="rotate(60 50 50)"><path d="M50 50 C54 35 54 20 50 5 C46 20 46 35 50 50 Z"/></g>
+          <g transform="rotate(120 50 50)"><path d="M50 50 C54 35 54 20 50 5 C46 20 46 35 50 50 Z"/></g>
+          <g transform="rotate(180 50 50)"><path d="M50 50 C54 35 54 20 50 5 C46 20 46 35 50 50 Z"/></g>
+          <g transform="rotate(240 50 50)"><path d="M50 50 C54 35 54 20 50 5 C46 20 46 35 50 50 Z"/></g>
+          <g transform="rotate(300 50 50)"><path d="M50 50 C54 35 54 20 50 5 C46 20 46 35 50 50 Z"/></g>
+        </g>
+      </svg>
+      <p class="env-message">Tenemos la enorme dicha<br>de invitaros a nuestra boda</p>
+      <p class="env-names">Fátima &amp; Jesús</p>
     </div>
     <div class="env-hint">Toca para abrir</div>
   </div>
+
 
   <section class="hero">
     <svg class="hero-rings" viewBox="0 0 300 130" fill="none" xmlns="http://www.w3.org/2000/svg">
